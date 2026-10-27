@@ -46,6 +46,7 @@ namespace SensorsTransit
         List<Sensor> Sensors = new List<Sensor>();  //LLista dels sensors
         List<Sensor> SensorsLocal = new List<Sensor>();       //Llista on rebem les dades del nombre de vehicles de cada sensor i la utilitzem per als càlculs
         List<Sensor> SensorsLocalOrd = new List<Sensor>();    //Llista auxiliar on ordenem el nombre de vehicles
+        private readonly object candau = new object();   // Tarea 5: lock para proteger MaxVehicles
 
         //Constructor de la classe SensorsCiutat. No cal fer res
         public SensorsCiutat(int Num)
@@ -150,12 +151,28 @@ namespace SensorsTransit
         /// </summary>
         public void CalcularMaxVehicles()
         {
-            MaxVehicles = 0;
+           /* MaxVehicles = 0;
 
             for (int i = 0; i < NumSensors - 1; i++)
             {
                 MaxVehicles = MesGran(MaxVehicles, SensorsLocal[i]);
-            }
+            }*/
+
+            // Tarea 5: máximo local por hilo y al final se compara con el global
+                MaxVehicles = 0;
+
+                Parallel.For(0, NumSensors,
+                    () => 0,
+                    (i, estat, maxLocal) => MesGran(maxLocal, SensorsLocal[i]),
+                    maxLocal =>
+                    {
+                        lock (candau)
+                        {
+                            if (maxLocal > MaxVehicles)
+                                MaxVehicles = maxLocal;
+                        }
+                    }
+                );
         }
 
         //TASCA A FER: Optimitzar aquest mètode si és possible
