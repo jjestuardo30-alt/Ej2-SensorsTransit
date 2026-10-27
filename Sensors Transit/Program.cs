@@ -194,22 +194,53 @@ namespace SensorsTransit
         /// </summary>
         public void OrdenaVehicles()
         {
-            bool canvi = true;
-            Sensor aux;
+            /* bool canvi = true;
+             Sensor aux;
 
-            SensorsLocalOrd = SensorsLocal;
-            while (canvi)
+             SensorsLocalOrd = SensorsLocal;
+             while (canvi)
+             {
+                 canvi = false;
+                 for (int i = 0; i < NumSensors - 1; i++)
+                 {
+                     if (EstanOrdenats(SensorsLocalOrd[i], SensorsLocalOrd[i + 1]))
+                     {
+                         aux = SensorsLocalOrd[i];
+                         SensorsLocalOrd[i] = SensorsLocalOrd[i + 1];
+                         SensorsLocalOrd[i + 1] = aux;
+                         canvi = true;
+                     }*/
+
+            // Tarea 6: copia real de la lista
+            SensorsLocalOrd = new List<Sensor>(SensorsLocal);
+
+            // Tarea 6: ordenación par-impar en paralelo
+            bool ordenat = false;
+
+            while (!ordenat)
             {
-                canvi = false;
-                for (int i = 0; i < NumSensors - 1; i++)
+                ordenat = true;
+
+                for (int inici = 0; inici <= 1; inici++)
                 {
-                    if (EstanOrdenats(SensorsLocalOrd[i], SensorsLocalOrd[i + 1]))
+                    bool canvi = false;
+                    int numParelles = (NumSensors - inici) / 2;
+
+                    Parallel.For(0, numParelles, k =>
                     {
-                        aux = SensorsLocalOrd[i];
-                        SensorsLocalOrd[i] = SensorsLocalOrd[i + 1];
-                        SensorsLocalOrd[i + 1] = aux;
-                        canvi = true;
-                    }
+                        int i = inici + 2 * k;
+
+                        // EstanOrdenats devuelve true cuando NO están en orden
+                        if (EstanOrdenats(SensorsLocalOrd[i], SensorsLocalOrd[i + 1]))
+                        {
+                            Sensor aux = SensorsLocalOrd[i];
+                            SensorsLocalOrd[i] = SensorsLocalOrd[i + 1];
+                            SensorsLocalOrd[i + 1] = aux;
+                            canvi = true;
+                        }
+                    });
+
+                    if (canvi) ordenat = false;
                 }
             }
         }
