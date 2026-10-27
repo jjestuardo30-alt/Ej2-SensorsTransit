@@ -93,13 +93,15 @@ namespace SensorsTransit
         /// </summary>
         public void MostraDadesSensors()
         {
-            string Missatge;
-
-            for (int i = 0; i < NumSensors; i++)
+             // Optimizacion NUEVO (Tasca 2) 
+            // El string Missatge ahora se declara DENTRO del bucle: si fuera compartido,
+            // un hilo podría pisar el mensaje de otro.
+            Parallel.For(0, NumSensors, i =>
             {
-                Missatge = "Sensor nº " + SensorsLocal[i].IdSensor + " --- " + SensorsLocal[i].NumVehicles + " vehicles comptabilitzats.";
+                string Missatge = "Sensor nº " + SensorsLocal[i].IdSensor + " --- " + SensorsLocal[i].NumVehicles + " vehicles comptabilitzats.";
                 Mostra(Missatge);
-            }
+            });
+            
         }
 
         //No cal optimitzar aquest mètode, només és per comprovar que s'han ordenat bé les dades
