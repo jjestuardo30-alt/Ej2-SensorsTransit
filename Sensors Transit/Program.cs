@@ -70,10 +70,20 @@ namespace SensorsTransit
         /// </summary>
         public void RebreDadesSensors()
         {
-            for (int i = 0; i < NumSensors; i++)
+           /* for (int i = 0; i < NumSensors; i++)
             {
                 SensorsLocal.Add(Sensors[i].EnviaDadesCentral());
-            }
+            }*/
+
+            // Tarea 1: cada hilo guarda en su posición del array, así no hace falta lock
+            Sensor[] rebuts = new Sensor[NumSensors];
+
+            Parallel.For(0, NumSensors, i =>
+            {
+                rebuts[i] = Sensors[i].EnviaDadesCentral();
+            });
+
+            SensorsLocal.AddRange(rebuts);
         }
 
         //TASCA A FER: Cal optimitzar aquest mètode, si és possible utilitzant mètodes de programació en paral·lel, concretamen el Parallel.For
