@@ -116,11 +116,19 @@ namespace SensorsTransit
         /// </summary>
         public void ResetSensors()
         {
-            for (int i = 0; i < NumSensors; i++)
+           /* for (int i = 0; i < NumSensors; i++)
             {
                 Sensors[i].Connecta();
                 Sensors[i].Reset();
-            }
+            }*/
+
+            // Tarea 3: cada sensor es independiente, se conectan y resetean a la vez
+            Parallel.For(0, NumSensors, i =>
+            {
+                Sensors[i].Connecta();
+                Sensors[i].Reset();
+            });
+
         }
 
         //TASCA A FER: Optimitzar aquest mètode si és possible
